@@ -3,6 +3,10 @@ package pl.edu.agh.mwo;
 public class Scanner {
 
 	String text;
+	static final int substrinBeginIndex = 0;
+	static final int substringEndIndex = 1;
+	static final int substringNewStringIndex = 1;
+	static final int stringIsEmpty = 0;
 
 	public Scanner(String initText) {
 		text = initText;
@@ -12,15 +16,15 @@ public class Scanner {
 		String resultText = "";
 		boolean functionReturnValue = false;
 		while (!functionReturnValue) {
-			if (text.length() == 0) {
+			if (stringIsEmptyOrNull()) {
 				return resultText;
 			} 
-			else if (text.substring(0, 1).matches("[ \t\n]")) {
-				text = text.substring(1);
+			else if (substringMatchesExpression("[ \t\n]")) {
+				text = text.substring(substringNewStringIndex);
 			} 
-			else if (text.substring(0, 1).matches("%")) {
-				while (!text.substring(0, 1).matches("\n")) {
-					text = text.substring(1);
+			else if (substringMatchesExpression("%")) {
+				while (!substringMatchesExpression("\n")) {
+					text = text.substring(substringNewStringIndex);
 				}
 			} 
 			else {
@@ -28,14 +32,24 @@ public class Scanner {
 			}
 		}
 
-		if (text.length() > 0 && text.substring(0, 1).matches("[()]")) {
-			resultText = text.substring(0, 1);
-			text = text.substring(1);
+		if (!stringIsEmptyOrNull() && substringMatchesExpression("[()]")) {
+			resultText = text.substring(substrinBeginIndex, substringEndIndex);
+			text = text.substring(substringNewStringIndex);
 		}
-		while (text.length() > 0 && !text.substring(0, 1).matches("[ \t\n%()]")) {
-			resultText += text.substring(0, 1);
-			text = text.substring(1);
+		while (!stringIsEmptyOrNull() && !substringMatchesExpression("[ \t\n%()]")) {
+			resultText += text.substring(substrinBeginIndex, substringEndIndex);
+			text = text.substring(substringNewStringIndex);
 		}
 		return resultText.toLowerCase();
+	}
+	
+	
+	public boolean stringIsEmptyOrNull(){
+		return text.length() == stringIsEmpty;
+	}
+	
+
+	public boolean substringMatchesExpression(String regularExpression){
+		return text.substring(substrinBeginIndex, substringEndIndex).matches(regularExpression);
 	}
 }
