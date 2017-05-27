@@ -7,7 +7,13 @@ public class Scanner {
 	static final int substringEndIndex = 1;
 	static final int substringNewStringIndex = 1;
 	static final int stringIsEmpty = 0;
-
+	static final String whitespace =" ";
+	static final String horizontalTab ="\t";
+	static final String newLine ="\n";
+	static final String percentSign ="%";
+	static final String leftParenthesis ="(";
+	static final String rightParenthesis =")";
+	
 	public Scanner(String initText) {
 		text = initText;
 	}
@@ -19,12 +25,12 @@ public class Scanner {
 			if (stringIsEmptyOrNull()) {
 				return resultText;
 			} 
-			else if (substringMatchesExpression("[ \t\n]")) {
-				text = text.substring(substringNewStringIndex);
+			else if(substringMatchesExpression(whitespace+horizontalTab+newLine)) {//substringMatchesExpression("[ \t\n]")
+				createNewText();
 			} 
-			else if (substringMatchesExpression("%")) {
-				while (!substringMatchesExpression("\n")) {
-					text = text.substring(substringNewStringIndex);
+			else if (substringMatchesExpression(percentSign)) {
+				while (!substringMatchesExpression(newLine)) {
+					createNewText();
 				}
 			} 
 			else {
@@ -32,24 +38,28 @@ public class Scanner {
 			}
 		}
 
-		if (!stringIsEmptyOrNull() && substringMatchesExpression("[()]")) {
+		if (!stringIsEmptyOrNull() && substringMatchesExpression(leftParenthesis+rightParenthesis)) {
 			resultText = text.substring(substrinBeginIndex, substringEndIndex);
-			text = text.substring(substringNewStringIndex);
+			createNewText();
 		}
-		while (!stringIsEmptyOrNull() && !substringMatchesExpression("[ \t\n%()]")) {
+		while (!stringIsEmptyOrNull() && !substringMatchesExpression(whitespace+horizontalTab+newLine+percentSign+leftParenthesis+rightParenthesis)) {//"[ \t\n%()]"
 			resultText += text.substring(substrinBeginIndex, substringEndIndex);
-			text = text.substring(substringNewStringIndex);
+			createNewText();
 		}
 		return resultText.toLowerCase();
 	}
 	
 	
-	public boolean stringIsEmptyOrNull(){
+	private boolean stringIsEmptyOrNull(){
 		return text.length() == stringIsEmpty;
 	}
 	
 
-	public boolean substringMatchesExpression(String regularExpression){
-		return text.substring(substrinBeginIndex, substringEndIndex).matches(regularExpression);
+	private boolean substringMatchesExpression(String regularExpression){
+		return text.substring(substrinBeginIndex, substringEndIndex).matches("["+regularExpression+"]");
+	}
+	
+	private void createNewText(){
+		text = text.substring(substringNewStringIndex);
 	}
 }
