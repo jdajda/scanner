@@ -38,7 +38,7 @@ public class Scanner {
 			}
 		}
 
-		if (!stringIsEmptyOrNull() && substringMatchesExpression(leftParenthesis+rightParenthesis)) {
+		if (substringMatchesExpression(leftParenthesis+rightParenthesis)) {//!stringIsEmptyOrNull() && 
 			resultText = text.substring(substrinBeginIndex, substringEndIndex);
 			createNewText();
 		}
