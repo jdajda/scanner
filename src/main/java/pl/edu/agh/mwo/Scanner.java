@@ -3,36 +3,80 @@ package pl.edu.agh.mwo;
 public class Scanner {
 
 	String text;
-
-	public Scanner(String init) {
-		text = init;
+	
+	static final int STRING_IS_EMPTY = 0;
+	static final String WHITESPACE =" ";
+	static final String HORIZONTAL_TAB ="\t";
+	static final String NEW_LINE ="\n";
+	static final String PERCENT_SIGN ="%";
+	static final String LEFT_PARENTHESIS ="(";
+	static final String RIGHT_PARENTHESIS =")";
+	static final String ALL_SPECIAL_SYMBOLS = WHITESPACE+HORIZONTAL_TAB+NEW_LINE+PERCENT_SIGN+LEFT_PARENTHESIS+RIGHT_PARENTHESIS;
+	
+	public Scanner(String initText) {
+		text = initText;
 	}
 
 	public String get() {
-		String result = "";
-		boolean ok = false;
-		while (!ok) {
-			if (text.length() == 0) {
-				return result;
-			} else if (text.substring(0, 1).matches("[ \t\n]")) {
+		String returnText = "";
+		if(removeWhiteSpaceAndCommentsFromText())
+			returnText = extractSingleTokenFromText();
+		return returnText.toLowerCase();
+	}
+	
+	
+	private boolean stringIsEmptyOrNull(){
+		return text.length() == STRING_IS_EMPTY;
+	}
+	
+
+	private boolean textSubstringMatchesExpression(String regularExpression){
+		if(!stringIsEmptyOrNull())
+			return text.substring(0, 1).matches("["+regularExpression+"]");
+		else return false;
+	}
+	
+	
+	private boolean removeWhiteSpaceAndCommentsFromText(){
+		boolean allWhitespaceAndCommentsRemoved = false;
+		while (!allWhitespaceAndCommentsRemoved) {
+			if (stringIsEmptyOrNull()) {
+				return false;
+			} 
+			else if(textSubstringMatchesExpression(WHITESPACE+HORIZONTAL_TAB+NEW_LINE)) {
 				text = text.substring(1);
-			} else if (text.substring(0, 1).matches("%")) {
-				while (!text.substring(0, 1).matches("\n")) {
+			} 
+			else if (textSubstringMatchesExpression(PERCENT_SIGN)) {
+				while (!textSubstringMatchesExpression(NEW_LINE)) {
 					text = text.substring(1);
 				}
-			} else {
-				ok = true;
+			} 
+			else {
+				allWhitespaceAndCommentsRemoved = true;
 			}
 		}
-
-		if (text.length() > 0 && text.substring(0, 1).matches("[()]")) {
-			result = text.substring(0, 1);
-			text = text.substring(1);
-		}
-		while (text.length() > 0 && !text.substring(0, 1).matches("[ \t\n%()]")) {
-			result += text.substring(0, 1);
-			text = text.substring(1);
-		}
-		return result.toLowerCase();
+		return true;
 	}
+	
+	private String extractParenthesesFromText(){
+		String returnText = "";
+		if (textSubstringMatchesExpression(LEFT_PARENTHESIS+RIGHT_PARENTHESIS)) {
+			returnText = text.substring(0, 1);
+			text = text.substring(1);
+		}
+		return returnText;
+	}
+	
+	private String extractSingleTokenFromText(){
+		String returnText = "";
+		returnText = extractParenthesesFromText();
+		if(!returnText.contentEquals(LEFT_PARENTHESIS) && !returnText.contentEquals(RIGHT_PARENTHESIS)){
+			while (!stringIsEmptyOrNull() && !textSubstringMatchesExpression(ALL_SPECIAL_SYMBOLS)) {
+				returnText += text.substring(0, 1);
+				text = text.substring(1);
+			}
+		}
+		return returnText;
+	}
+	
 }

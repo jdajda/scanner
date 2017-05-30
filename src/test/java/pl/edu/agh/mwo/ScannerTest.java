@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 
 public class ScannerTest extends TestCase {
 
-	Scanner scanner1, scanner2, scanner3, scanner4;
+	Scanner scanner1, scanner2, scanner3, scanner4, scanner5;
 
 	@Before
 	protected void setUp() {
@@ -32,6 +32,7 @@ public class ScannerTest extends TestCase {
 		scanner2 = new Scanner("element1( \t\n element2)");
 		scanner3 = new Scanner("element1 %\t komentarz\nelement2");
 		scanner4 = new Scanner("fix \n \t");
+		scanner5 = new Scanner("");
 	}
 
 	@Test
@@ -63,6 +64,11 @@ public class ScannerTest extends TestCase {
 		assertEquals("fix", scanner4.get());
 		assertEquals("", scanner4.get());
 		assertEquals("", scanner4.get());
+	}
+	
+	@Test
+	public void testPustyString() {
+		assertEquals("", scanner5.get());
 	}
 	
 }
